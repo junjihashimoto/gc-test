@@ -5,6 +5,7 @@ import Foreign
 import System.Mem
 import System.IO
 import System.IO.Unsafe (unsafePerformIO)
+import Control.Concurrent
 
 
 data Vector
@@ -25,11 +26,13 @@ newVector = do
 
 main = do
   hSetBuffering stdout NoBuffering
-  forM_ [1..10] $ \_ -> do
-    forM_ [1..10] $ \_ -> do
+  forM_ [1..100] $ \_ -> do
+    forM_ [1..100] $ \_ -> do
       let v = unsafePerformIO $ newVector
       print (unsafePerformIO $ withForeignPtr v c_size)
+      threadDelay 1000
       return ()
     print "Do gc"
-    performMajorGC
+    performGC
+    threadDelay 1000
     print "Done gc"
