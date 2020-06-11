@@ -10,7 +10,7 @@ import Control.Concurrent
 
 data Vector
 
-foreign import ccall "init_vector"
+foreign import ccall "test.h init_vector"
   c_init_vector  :: IO (Ptr Vector)
 
 foreign import ccall unsafe "test.h &delete_vector"
@@ -26,13 +26,11 @@ newVector = do
 
 main = do
   hSetBuffering stdout NoBuffering
-  forM_ [1..100] $ \_ -> do
-    forM_ [1..100] $ \_ -> do
-      let v = unsafePerformIO $ newVector
-      print (unsafePerformIO $ withForeignPtr v c_size)
-      threadDelay 1000
+  forM_ [1..10] $ \_ -> do
+    forM_ [1..10] $ \_ -> do
+      _ <- newVector
       return ()
     print "Do gc"
-    performGC
-    threadDelay 1000
+    performMajorGC
+    performMajorGC
     print "Done gc"
